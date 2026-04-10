@@ -1,52 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Text and BMI Analyzer</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<div class="container">
-  <div class="header">Text and BMI Analyzer</div>
-  <div class="body">
-
-    <!-- Section 1: Vowel & Consonant Counter -->
-    <div class="card">
-      <h2>Vowel &amp; Consonant Counter</h2>
-      <label class="field-label" for="sentenceInput">Enter a sentence:</label>
-      <input type="text" id="sentenceInput" placeholder="This is a simple test sentence."/>
-      <br/>
-      <button class="btn" id="analyzeBtn" onclick="analyzeText()">Analyze Text</button>
-      <div class="error" id="textError"></div>
-      <div class="result" id="textResult">
-        <p id="vowelLine">Vowels: —</p>
-        <p id="consonantLine">Consonants: —</p>
-      </div>
+  <div class="container">
+    <div class="header">
+      <h1>Text and BMI Analyzer</h1>
     </div>
 
-    <!-- Section 2: BMI Calculator -->
-    <div class="card">
-      <h2>BMI Calculator</h2>
-      <div class="bmi-inputs">
-        <label for="weight">Weight (lbs):</label>
-        <input type="number" id="weight" placeholder="150" min="1"/>
-        <label for="heightFt">Height (ft):</label>
-        <input type="number" id="heightFt" placeholder="5" min="1" max="9"/>
-        <label for="heightIn">Height (in):</label>
-        <input type="number" id="heightIn" placeholder="10" min="0" max="11"/>
-      </div>
-      <button class="btn" onclick="calculateBMI()">Calculate BMI</button>
-      <div class="error" id="bmiError"></div>
-      <div class="result" id="bmiResult">
-        <p id="bmiLine">Your BMI: —</p>
-      </div>
-    </div>
+    <div class="content">
 
+      <!-- Section 1: Vowel & Consonant Counter -->
+      <div class="card">
+        <h2>Vowel &amp; Consonant Counter</h2>
+
+        <label for="sentenceInput">Enter a sentence:</label>
+        <input type="text" id="sentenceInput" placeholder="Type a sentence here..." />
+
+        <button id="analyzeBtn">Analyze Text</button>
+
+        <div id="textResult" class="result hidden">
+          <p id="vowelLine"></p>
+          <p id="consonantLine"></p>
+        </div>
+      </div>
+
+      <!-- Section 2: BMI Calculator -->
+      <div class="card">
+        <h2>BMI Calculator</h2>
+
+        <div class="bmi-row">
+          <div class="bmi-field">
+            <label for="weight">Weight (lbs):</label>
+            <input type="number" id="weight" placeholder="e.g. 150" />
+          </div>
+          <div class="bmi-field">
+            <label for="heightFt">Height (ft):</label>
+            <input type="number" id="heightFt" placeholder="e.g. 5" />
+          </div>
+          <div class="bmi-field">
+            <label for="heightIn">Height (in):</label>
+            <input type="number" id="heightIn" placeholder="e.g. 10" />
+          </div>
+        </div>
+
+        <button id="bmiBtn">Calculate BMI</button>
+
+        <div id="bmiResult" class="result hidden">
+          <p id="bmiLine"></p>
+        </div>
+      </div>
+
+    </div>
   </div>
-</div>
 
-<script src="index.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>

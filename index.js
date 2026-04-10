@@ -1,103 +1,75 @@
-// ── Helper: show error message ──
-function showError(el, msg) {
-  el.textContent = msg;
-  el.classList.add("visible");
-}
+// Wait for the page to fully load before attaching events
+window.onload = function () {
 
-// ── Helper: clear error and result ──
-function resetSection(errorId, resultId) {
-  document.getElementById(errorId).classList.remove("visible");
-  document.getElementById(resultId).classList.remove("visible");
-}
+  // Attach click events to both buttons
+  document.getElementById("analyzeBtn").addEventListener("click", analyzeText);
+  document.getElementById("bmiBtn").addEventListener("click", calculateBMI);
 
-// ── Section 1: Vowel & Consonant Counter ──
-// Sends the sentence to the Claude API endpoint which counts vowels and consonants
-async function analyzeText() {
-  const btn       = document.getElementById("analyzeBtn");
-  const errorEl   = document.getElementById("textError");
-  const resultBox = document.getElementById("textResult");
-  const text      = document.getElementById("sentenceInput").value.trim();
+};
 
-  resetSection("textError", "textResult");
+// ── Function 1: Count Vowels and Consonants ──
+function analyzeText() {
+  var input = document.getElementById("sentenceInput").value;
+  var resultDiv = document.getElementById("textResult");
 
-  if (!text) {
-    showError(errorEl, "Please enter a sentence before analyzing.");
+  // Check that the user typed something
+  if (input.trim() === "") {
+    alert("Please enter a sentence first.");
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = "Analyzing...";
+  var vowels = 0;
+  var consonants = 0;
+  var vowelList = "aeiouAEIOU";
 
-  try {
-    // Send sentence to Claude API — Claude counts vowels and consonants and returns JSON
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [
-          {
-            role: "user",
-            content: `Count the vowels and consonants in this text. Return ONLY raw JSON, no markdown, no explanation:
-{"vowels": <number>, "consonants": <number>}
+  // Loop through every character in the sentence
+  for (var i = 0; i < input.length; i++) {
+    var ch = input[i];
 
-Rules: only count alphabetic letters (a-z, A-Z). Vowels = a, e, i, o, u (any case). All other letters = consonants.
-
-Text: "${text}"`,
-          },
-        ],
-      }),
-    });
-
-    const data  = await response.json();
-    const raw   = data.content.map((block) => block.text || "").join("");
-    const clean = raw.replace(/```json|```/g, "").trim();
-    const result = JSON.parse(clean);
-
-    // Display the counts returned from the endpoint
-    document.getElementById("vowelLine").textContent     = `Vowels: ${result.vowels}`;
-    document.getElementById("consonantLine").textContent = `Consonants: ${result.consonants}`;
-    resultBox.classList.add("visible");
-
-  } catch (err) {
-    showError(errorEl, "Something went wrong. Please try again.");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Analyze Text";
+    // Only count letters, skip spaces and punctuation
+    if (ch.match(/[a-zA-Z]/)) {
+      if (vowelList.indexOf(ch) !== -1) {
+        vowels++;
+      } else {
+        consonants++;
+      }
+    }
   }
+
+  // Display the results
+  document.getElementById("vowelLine").textContent = "Vowels: " + vowels;
+  document.getElementById("consonantLine").textContent = "Consonants: " + consonants;
+  resultDiv.classList.remove("hidden");
 }
 
-// ── Section 2: BMI Calculator ──
-// Formula: (weight in lbs / height in inches²) × 703
+// ── Function 2: Calculate BMI ──
 function calculateBMI() {
-  const errorEl   = document.getElementById("bmiError");
-  const resultBox = document.getElementById("bmiResult");
+  var weight = parseFloat(document.getElementById("weight").value);
+  var feet   = parseFloat(document.getElementById("heightFt").value);
+  var inches = parseFloat(document.getElementById("heightIn").value);
+  var resultDiv = document.getElementById("bmiResult");
 
-  resetSection("bmiError", "bmiResult");
-
-  const weight = parseFloat(document.getElementById("weight").value);
-  const feet   = parseFloat(document.getElementById("heightFt").value) || 0;
-  const inches = parseFloat(document.getElementById("heightIn").value) || 0;
-
-  if (!weight || weight <= 0) {
-    showError(errorEl, "Please enter a valid weight.");
+  // Validate inputs
+  if (isNaN(weight) || weight <= 0) {
+    alert("Please enter a valid weight.");
     return;
   }
-  if (feet <= 0) {
-    showError(errorEl, "Please enter a valid height in feet.");
+  if (isNaN(feet) || feet <= 0) {
+    alert("Please enter a valid height in feet.");
     return;
   }
+  if (isNaN(inches)) {
+    inches = 0;
+  }
 
-  const totalInches = feet * 12 + inches;
-  const bmi         = (weight / (totalInches * totalInches)) * 703;
-  const rounded     = Math.round(bmi * 10) / 10;
+  // Convert height to total inches
+  var totalInches = (feet * 12) + inches;
 
-  document.getElementById("bmiLine").textContent = `Your BMI: ${rounded}`;
-  resultBox.classList.add("visible");
+  // BMI formula for imperial units: (weight / height^2) x 703
+  var bmi = (weight / (totalInches * totalInches)) * 703;
+  var bmiRounded = Math.round(bmi * 10) / 10;
+
+  // Display the result
+  document.getElementById("bmiLine").textContent = "Your BMI: " + bmiRounded;
+  resultDiv.classList.remove("hidden");
 }
-
-// Press Enter in the text field to trigger analysis
-document.getElementById("sentenceInput").addEventListener("keydown", function (e) {
-  if (e.key === "Enter") analyzeText();
-});
